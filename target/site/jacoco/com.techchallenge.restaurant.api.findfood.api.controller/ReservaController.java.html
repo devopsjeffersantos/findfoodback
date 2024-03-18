@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">findfoodback</a> &gt; <a href="index.source.html" class="el_package">com.techchallenge.restaurant.api.findfood.api.controller</a> &gt; <span class="el_source">ReservaController.java</span></div><h1>ReservaController.java</h1><pre class="source lang-java linenums">package com.techchallenge.restaurant.api.findfood.api.controller;
+
+import com.techchallenge.restaurant.api.findfood.api.model.ReservaDTO;
+import com.techchallenge.restaurant.api.findfood.domain.service.ReservaService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+
+
+@RestController
+@RequestMapping(&quot;/api/restaurantes&quot;)
+<span class="fc" id="L15">@AllArgsConstructor</span>
+public class ReservaController {
+
+    private final ReservaService service;
+
+    @PostMapping(&quot;/{restauranteId}/reservarMesa&quot;)
+    public ResponseEntity&lt;ReservaDTO&gt; reservarMesa(@PathVariable Long restauranteId, @RequestBody ReservaDTO reservaDTO) {
+<span class="fc" id="L22">        var reservarMesa = service.reservarMesa(restauranteId, reservaDTO);</span>
+<span class="fc" id="L23">        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(reservarMesa);</span>
+    }
+
+    @GetMapping(&quot;/{restauranteId}/reservas&quot;)
+    public ResponseEntity&lt;Collection&lt;ReservaDTO&gt;&gt; findAll(@PathVariable Long restauranteId) {
+<span class="fc" id="L28">        var reservas = service.findAll(restauranteId);</span>
+<span class="fc" id="L29">        return ResponseEntity.ok(reservas);</span>
+    }
+
+    @GetMapping(&quot;/reserva/{reservaId}&quot;)
+    public ResponseEntity&lt;ReservaDTO&gt; findById(@PathVariable Long reservaId) {
+<span class="fc" id="L34">        var reserva = service.findById(reservaId);</span>
+<span class="fc" id="L35">        return ResponseEntity.ok(reserva);</span>
+    }
+
+    @DeleteMapping(&quot;/reserva/{reservaId}&quot;)
+    public ResponseEntity&lt;String&gt; excluirReserva(@PathVariable Long reservaId) {
+<span class="fc" id="L40">        service.delete(reservaId);</span>
+<span class="fc" id="L41">        return ResponseEntity.ok().body(&quot;Reserva excluída com sucesso&quot;);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

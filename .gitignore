@@ -1,0 +1,9 @@
+.DS_Store
+src/.DS_Store
+src/main/.DS_Store
+src/main/java/.DS_Store
+src/main/java/com/.DS_Store
+.ideia/misc.xml
+.ideia/compiler.xml
+
+findfood.iml

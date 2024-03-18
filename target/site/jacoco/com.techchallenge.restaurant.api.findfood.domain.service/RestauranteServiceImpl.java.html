@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestauranteServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">findfoodback</a> &gt; <a href="index.source.html" class="el_package">com.techchallenge.restaurant.api.findfood.domain.service</a> &gt; <span class="el_source">RestauranteServiceImpl.java</span></div><h1>RestauranteServiceImpl.java</h1><pre class="source lang-java linenums">package com.techchallenge.restaurant.api.findfood.domain.service;
+
+
+import com.techchallenge.restaurant.api.findfood.api.model.RestauranteDTO;
+import com.techchallenge.restaurant.api.findfood.domain.model.Restaurante;
+import com.techchallenge.restaurant.api.findfood.domain.repository.RestauranteRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class RestauranteServiceImpl implements RestauranteService {
+
+    private final RestauranteRepository restauranteRepository;
+
+<span class="fc" id="L21">    @Autowired</span>
+    private final ModelMapper modelMapper = new ModelMapper();
+
+<span class="fc" id="L24">    public RestauranteServiceImpl(RestauranteRepository restauranteRepository) {</span>
+<span class="fc" id="L25">        this.restauranteRepository = restauranteRepository;</span>
+<span class="fc" id="L26">    }</span>
+
+    public RestauranteDTO save(RestauranteDTO restauranteDTO) {
+<span class="fc" id="L29">        Restaurante restaurante = restauranteRepository.save(modelMapper.map(restauranteDTO, Restaurante.class));</span>
+<span class="fc" id="L30">        return modelMapper.map(restaurante, RestauranteDTO.class);</span>
+    }
+
+    public List&lt;Restaurante&gt; findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(String nome, String localizacao, String tipoDeCozinha) {
+
+<span class="pc bpc" id="L35" title="1 of 4 branches missed.">        if (nome == null || nome.isEmpty()) {</span>
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">            if (localizacao == null || localizacao.isEmpty()) {</span>
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">                if (tipoDeCozinha == null || tipoDeCozinha.isEmpty()) {</span>
+<span class="fc" id="L38">                    throw new IllegalArgumentException(&quot;Pelo menos um critério de busca (nome, localização ou tipo de cozinha) deve ser informado.&quot;);</span>
+                }
+            }
+        }
+
+        // Execute search based on provided criteria
+<span class="fc" id="L44">        List&lt;Restaurante&gt; restaurantesEncontrados = restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(nome, localizacao, tipoDeCozinha);</span>
+
+        // Handle empty result based on search criteria
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (restaurantesEncontrados.isEmpty()) {</span>
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">            if (nome != null &amp;&amp; !nome.isEmpty()) {</span>
+<span class="fc" id="L49">                throw new EntityNotFoundException(String.format(&quot;Restaurante com nome '%s' não foi encontrado.&quot;, nome));</span>
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">            } else if (localizacao != null &amp;&amp; !localizacao.isEmpty()) {</span>
+<span class="fc" id="L51">                throw new EntityNotFoundException(String.format(&quot;Restaurante com localização '%s' não foi encontrado.&quot;, localizacao));</span>
+            } else {
+<span class="fc" id="L53">                throw new EntityNotFoundException(String.format(&quot;Restaurante com tipo de cozinha '%s' não foi encontrado.&quot;, tipoDeCozinha));</span>
+            }
+        }
+
+<span class="fc" id="L57">        return restaurantesEncontrados;</span>
+    }
+
+    @Override
+    public Optional&lt;RestauranteDTO&gt; findById(Long id) {
+<span class="fc" id="L62">        Optional&lt;Restaurante&gt; restauranteOptional = restauranteRepository.findById(id);</span>
+<span class="fc" id="L63">        return restauranteOptional.map(restaurante -&gt; modelMapper.map(restaurante, RestauranteDTO.class));</span>
+    }
+
+    public Collection&lt;RestauranteDTO&gt; findAll() {
+<span class="fc" id="L67">        return restauranteRepository.findAll().stream()</span>
+<span class="fc" id="L68">                .map(restaurante -&gt; modelMapper.map(restaurante, RestauranteDTO.class))</span>
+<span class="fc" id="L69">                .toList();</span>
+    }
+
+
+    public RestauranteDTO update(Long restauranteId, RestauranteDTO restauranteDTO) {
+<span class="fc" id="L74">        Optional&lt;Restaurante&gt; optionalRestaurante = restauranteRepository.findById(restauranteId);</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if(optionalRestaurante.isPresent()){</span>
+<span class="fc" id="L77">            Restaurante restaurante = optionalRestaurante.get();</span>
+<span class="fc" id="L78">            modelMapper.map(restauranteDTO, restaurante);</span>
+
+<span class="fc" id="L80">            restaurante = restauranteRepository.save(restaurante);</span>
+
+<span class="fc" id="L82">            return modelMapper.map(restaurante, RestauranteDTO.class);</span>
+        } else {
+<span class="fc" id="L84">            throw new EntityNotFoundException(&quot;Restaurante não foi encontrado&quot;);</span>
+        }
+    }
+
+    public void delete(Long id) {
+<span class="fc" id="L89">        Optional&lt;Restaurante&gt; restauranteOptional = restauranteRepository.findById(id);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (restauranteOptional.isPresent()) {</span>
+<span class="fc" id="L91">            restauranteRepository.deleteById(id);</span>
+        } else {
+<span class="fc" id="L93">            throw new EntityNotFoundException(String.format(&quot;Restaurante com ID '%s' não foi encontrado para exclusão.&quot;, id));</span>
+        }
+<span class="fc" id="L95">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
