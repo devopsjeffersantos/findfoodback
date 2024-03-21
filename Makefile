@@ -52,7 +52,9 @@ report-maven: # Gerar relatorio HTML utilizando maven
 	@echo $(TIMESTAMP) [INFO] maven report generate in: $(MVN_REPORT)
 
 report-allure:
-	allure serve target
+	#allure serve target
+		allure generate --clean
+	allure serve
 
 ## Docker
 
