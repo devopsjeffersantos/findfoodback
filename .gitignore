@@ -9,4 +9,4 @@ findfood.iml
 .idea
 .vscode
 .mvn
-target
+target/

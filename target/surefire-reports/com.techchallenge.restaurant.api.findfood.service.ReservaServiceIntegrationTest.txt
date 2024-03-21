@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.techchallenge.restaurant.api.findfood.service.ReservaServiceIntegrationTest
--------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 46.94 s -- in com.techchallenge.restaurant.api.findfood.service.ReservaServiceIntegrationTest
