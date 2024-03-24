@@ -59,7 +59,4 @@ jobs:
           app-name: 'findfoodbackteste'
           slot-name: 'Production'
           package: '*.jar'
-          DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
-          DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
-          DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
           
