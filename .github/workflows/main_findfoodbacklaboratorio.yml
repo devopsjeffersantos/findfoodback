@@ -56,6 +56,9 @@ jobs:
       - name: Install Makefile
         run: sudo apt-get install make -y
 
+      - name: Run MVN wrapper
+        run: mvn wrapper:wrapper
+
       - name: Run Tests (Unit, System Integration, Perfomance, etc.)
         run: make test
   deploy:
