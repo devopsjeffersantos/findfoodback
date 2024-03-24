@@ -46,6 +46,9 @@ jobs:
         with:
           java-version: '17'
 
+      - name: Setup Maven
+        run: mvn wrapper:wrapper
+
       - name: Run Makefile
         env:
             DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
