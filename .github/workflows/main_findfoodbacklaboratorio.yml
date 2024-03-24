@@ -37,6 +37,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     needs: build
+    environment:
+      DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+      DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
+      DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
@@ -53,14 +57,13 @@ jobs:
       #   DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
       #   DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
 
-      - name: Install Makefile
-        run: sudo apt-get install make -y
-
       - name: Run MVN wrapper
         run: mvn wrapper:wrapper
 
       - name: Run Tests (Unit, System Integration, Perfomance, etc.)
         run: make test
+
+
   deploy:
     runs-on: ubuntu-latest
     needs: tests
