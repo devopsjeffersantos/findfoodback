@@ -23,11 +23,7 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install
-        with:
-          DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
-          DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
-          DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
-
+ 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
