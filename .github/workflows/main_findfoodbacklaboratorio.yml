@@ -63,4 +63,10 @@ jobs:
           app-name: 'findfoodbacklaboratorio'
           slot-name: 'Production'
           package: '*.jar'
-          
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: run unit tests
+        run: mvn test
+        
