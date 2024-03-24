@@ -54,7 +54,7 @@ jobs:
       #   DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
 
       - name: Install Makefile
-        run: apt-get install make
+        run: sudo apt-get install make -y
 
       - name: Run Tests (Unit, System Integration, Perfomance, etc.)
         run: make test
