@@ -171,11 +171,11 @@
                         </configurationParameters>
                     </properties>
                     <systemPropertyVariables>
-                        <junit.jupiter.extensions.autodetection.enabled>true
-                        </junit.jupiter.extensions.autodetection.enabled>
-                        <allure.results.directory>${project.build.directory}/allure-results
-                        </allure.results.directory>
+                        <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
                     </systemPropertyVariables>
+
+			
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -208,11 +208,11 @@
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.23.0</version>
+                <version>2.26.0</version>
                 <configuration>
                     <reportVersion>2.4.1</reportVersion>
-                    <resultsDirectory>${project.build.directory}/allure-results/</resultsDirectory>
-                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
+                    <!--<resultsDirectory>${project.build.directory}/allure-results/</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>-->
                 </configuration>
             </plugin>
         </plugins>
