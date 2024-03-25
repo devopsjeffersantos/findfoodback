@@ -46,7 +46,7 @@ jobs:
           java-version: '17'
 
       - name: Unit Tests
-        run: ./mvn test
+        run: mvn test
 
       - name: Get Allure history
         uses: actions/checkout@v4
