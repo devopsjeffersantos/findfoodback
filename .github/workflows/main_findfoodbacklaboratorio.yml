@@ -46,6 +46,10 @@ jobs:
           java-version: '17'
 
       - name: Unit Tests
+        env:
+          DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+          DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
+          DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
         run: mvn test
 
       - name: Get Allure history
