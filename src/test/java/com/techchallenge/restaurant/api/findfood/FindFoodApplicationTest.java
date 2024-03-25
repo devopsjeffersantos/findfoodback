@@ -10,12 +10,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = FindfoodApplication.class)
-public class FindFoodApplicationTest {
+class FindFoodApplicationTest {
     @Autowired
     private FindfoodApplication application;
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
         // Verifica se a aplicação foi iniciada corretamente
         assertThat(application).isNotNull();
     }
