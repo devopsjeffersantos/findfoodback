@@ -1,78 +1,120 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
-	<relativePath/>
+        <version>3.1.1</version>
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.techchallenge.restaurant.api.findfood</groupId>
+
+    <repositories>
+        <repository>
+            <id>central-sonatype</id>
+            <name>Central Sonatype</name>
+            <url>https://repo1.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+   <groupId>com.techchallenge.restaurant.api.findfood</groupId>
     <artifactId>findfood</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>findfoodback</name>
     <description>Sistema de Restaurantes</description>
+    <packaging>jar</packaging>
+
+    <name>demo-codigo</name>
 
     <properties>
         <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    	<allure.version>2.26.0</allure.version>
-	<aspectj.version>1.9.21</aspectj.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>5.9.3</junit.version>
+        <aspectj.version>1.9.19</aspectj.version>
     </properties>
-
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency> -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
+            <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
         </dependency>
-
+        <!-- test-->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+        </dependency>
+        <!-- para testar controller de forma mais fluida -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>spring-mock-mvc</artifactId>
+            <version>5.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -83,76 +125,72 @@
                     <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy-xml</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-
-            <dependency>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-junit5</artifactId>
-                <scope>test</scope>
-            </dependency>
-
+        <!-- database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- relatorio de testes -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.23.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-rest-assured</artifactId>
+            <version>2.23.0</version>
+        </dependency>
+        <!-- teste de log-->
+        <dependency>
+            <groupId>com.callibrity.logging</groupId>
+            <artifactId>log-tracker</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <!-- cucumber -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.13.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.13.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.9.3</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Dependências do Gatling -->
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-app</artifactId>
+            <version>3.9.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>3.9.5</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.qameta.allure</groupId>
-                <artifactId>allure-bom</artifactId>
-                <version>${allure.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-
-                    <image>
-                        <name>findfoodback</name>
-                    </image>
-
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-	    <!--  </plugins>
-	    </build>
-
-
-	<build> 
-		<plugins> -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -171,11 +209,11 @@
                         </configurationParameters>
                     </properties>
                     <systemPropertyVariables>
-                        <junit.jupiter.extensions.autodetection.enabled>true</junit.jupiter.extensions.autodetection.enabled>
-                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <junit.jupiter.extensions.autodetection.enabled>true
+                        </junit.jupiter.extensions.autodetection.enabled>
+                        <allure.results.directory>${project.build.directory}/allure-results
+                        </allure.results.directory>
                     </systemPropertyVariables>
-
-			
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -208,72 +246,79 @@
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.26.0</version>
+                <version>2.23.0</version>
                 <configuration>
                     <reportVersion>2.4.1</reportVersion>
-                    <!--<resultsDirectory>${project.build.directory}/allure-results/</resultsDirectory>
-                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>-->
+                    <resultsDirectory>${project.build.directory}/allure-results/</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
                 </configuration>
             </plugin>
         </plugins>
-</build>
+    </build>
 
     <profiles>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <includes combine.self="override">
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes combine.self="override">
+                                <exclude>**/*Test.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>system-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <includes combine.self="override">
+                                <include>**/CucumberTest.java</include>
+                            </includes>
+                            <excludes combine.self="override">
+                            </excludes>
+                            <properties>
+                                <configurationParameters>
+                                    cucumber.junit-platform.naming-strategy=long
+                                </configurationParameters>
+                            </properties>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>performance-test</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.lazerycode.jmeter</groupId>
-                        <artifactId>jmeter-maven-plugin</artifactId>
-                        <version>3.6.0</version>
-                        <executions>
-                            <!-- Generate JMeter configuration -->
-                            <execution>
-                                <id>configuration</id>
-                                <goals>
-                                    <goal>configure</goal>
-                                </goals>
-                            </execution>
-                            <!-- Run JMeter tests -->
-                            <execution>
-                                <id>jmeter-tests</id>
-                                <goals>
-                                    <goal>jmeter</goal>
-                                </goals>
-                            </execution>
-                            <!-- Fail build on errors in test -->
-                            <execution>
-                                <id>jmeter-check-results</id>
-                                <goals>
-                                    <goal>results</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <groupId>io.gatling</groupId>
+                        <artifactId>gatling-maven-plugin</artifactId>
+                        <version>4.3.7</version>
                         <configuration>
-                            <generateReports>true</generateReports>
-                            <ignoreResultFailures>true</ignoreResultFailures>
-                            <jmeterExtensions>
-                                <artifact>kg.apc:jmeter-plugins-casutg:2.6</artifact>
-                            </jmeterExtensions>
-                            <excludedArtifacts>
-                                <exclusion>org.slf4j:slf4j-nop</exclusion>
-                                <exclusion>avalon-framework:*</exclusion>
-                                <exclusion>org.apache.tika:*</exclusion>
-                                <exclusion>excalibur-datasource:excalibur-datasource</exclusion>
-                                <exclusion>excalibur-instrument:excalibur-instrument</exclusion>
-                                <exclusion>excalibur-logger:excalibur-logger</exclusion>
-                                <exclusion>excalibur-pool:*</exclusion>
-                                <exclusion>org.beanshell:bsh:jar:2.0b5</exclusion>
-                            </excludedArtifacts>
-
+                            <simulationClass>org.example.performance.ApiPerformanceSimulation</simulationClass>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-
 
 </project>
