@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestauranteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">findfoodback</a> &gt; <a href="index.source.html" class="el_package">com.techchallenge.restaurant.api.findfood.api.controller</a> &gt; <span class="el_source">RestauranteController.java</span></div><h1>RestauranteController.java</h1><pre class="source lang-java linenums">package com.techchallenge.restaurant.api.findfood.api.controller;
+
+import com.techchallenge.restaurant.api.findfood.api.model.RestauranteDTO;
+import com.techchallenge.restaurant.api.findfood.domain.model.Restaurante;
+import com.techchallenge.restaurant.api.findfood.domain.service.RestauranteService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/restaurantes&quot;)
+<span class="fc" id="L20">@AllArgsConstructor</span>
+@Tag(name = &quot;Gerenciamento de Restaurantes&quot;, description = &quot;Endpoints para cadastro e pesquisa de restaurantes&quot;)
+public class RestauranteController {
+
+    private final RestauranteService service;
+
+    @PostMapping(&quot;/registrarRestaurante&quot;)
+    @Operation(summary = &quot;Registrar Restaurante&quot;, description = &quot;Registra um novo restaurante&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Restaurante registrado com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Requisição inválida&quot;)
+    })
+    public ResponseEntity&lt;String&gt; save(@RequestBody RestauranteDTO restauranteDTO) {
+<span class="fc" id="L33">        service.registrarRestaurante(restauranteDTO);</span>
+<span class="fc" id="L34">        return ResponseEntity.status(HttpStatus.CREATED).body(&quot;Restaurante Registrado com Sucesso&quot;);</span>
+    }
+
+    @GetMapping(&quot;/pesquisa&quot;)
+    @Operation(summary = &quot;Pesquisar Restaurantes&quot;, description = &quot;Pesquisa restaurantes por nome, localização e tipo de cozinha&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Restaurantes encontrados&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Nenhum restaurante encontrado&quot;)
+    })
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; findRestaurantes(
+            @Parameter(description = &quot;Nome do restaurante&quot;) @RequestParam(name = &quot;nome&quot;, required = false, defaultValue = &quot;&quot;) String nome,
+            @Parameter(description = &quot;Localização do restaurante&quot;) @RequestParam(name = &quot;localizacao&quot;, required = false, defaultValue = &quot;&quot;) String localizacao,
+            @Parameter(description = &quot;Tipo de cozinha do restaurante&quot;) @RequestParam(name = &quot;tipoCozinha&quot;, required = false, defaultValue = &quot;&quot;) String tipoCozinha) {
+<span class="fc" id="L47">        var restaurantes = service.buscarRestaurantePor(nome, localizacao, tipoCozinha);</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (restaurantes.isEmpty()) {</span>
+<span class="nc" id="L49">            return ResponseEntity.notFound().build();</span>
+        } else {
+<span class="fc" id="L51">            return ResponseEntity.ok(restaurantes);</span>
+        }
+    }
+
+    @GetMapping(&quot;/todos&quot;)
+    @Operation(summary = &quot;Listar Todos os Restaurantes&quot;, description = &quot;Lista todos os restaurantes cadastrados&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Restaurantes encontrados&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Nenhum restaurante cadastrado&quot;)
+    })
+    public ResponseEntity&lt;List&lt;Restaurante&gt;&gt; findAll() {
+<span class="fc" id="L62">        var restaurantes = service.buscarTodosRestaurantes();</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (restaurantes.isEmpty()) {</span>
+<span class="nc" id="L64">            return ResponseEntity.notFound().build();</span>
+        } else {
+<span class="fc" id="L66">            return ResponseEntity.ok(restaurantes);</span>
+        }
+    }
+
+    @PutMapping(&quot;/atualizar/{restauranteId}&quot;)
+    @Operation(summary = &quot;Atualizar Restaurante&quot;, description = &quot;Atualiza os dados de um restaurante existente&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Restaurante atualizado com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Restaurante não encontrado&quot;)
+    })
+    public ResponseEntity&lt;RestauranteDTO&gt; update(@PathVariable Long restauranteId, @RequestBody RestauranteDTO restauranteDTO) {
+<span class="fc" id="L77">        restauranteDTO = service.atualizarRestaurante(restauranteId, restauranteDTO);</span>
+<span class="fc" id="L78">        return ResponseEntity.ok(restauranteDTO);</span>
+    }
+
+    @DeleteMapping(&quot;/deletar/{restauranteId}&quot;)
+    @Operation(summary = &quot;Deletar Restaurante&quot;, description = &quot;Exclui um restaurante pelo seu ID&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Restaurante deletado com sucesso&quot;),
+            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Restaurante não encontrado&quot;)
+    })
+    public ResponseEntity&lt;String&gt; delete(@PathVariable Long restauranteId) {
+<span class="fc" id="L88">        service.deletarRestaurante(restauranteId);</span>
+<span class="fc" id="L89">        return ResponseEntity.status(HttpStatus.OK).body(&quot;Restaurante Deletado com Sucesso&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

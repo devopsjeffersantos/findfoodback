@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">findfoodback</a> &gt; <a href="index.source.html" class="el_package">com.techchallenge.restaurant.api.findfood.domain.service</a> &gt; <span class="el_source">ReservaService.java</span></div><h1>ReservaService.java</h1><pre class="source lang-java linenums">package com.techchallenge.restaurant.api.findfood.domain.service;
+
+import com.techchallenge.restaurant.api.findfood.api.model.ReservaDTO;
+import com.techchallenge.restaurant.api.findfood.domain.exception.NaoHaMesasDisponiveisException;
+import com.techchallenge.restaurant.api.findfood.domain.model.Reserva;
+import com.techchallenge.restaurant.api.findfood.domain.repository.ReservaRepository;
+import com.techchallenge.restaurant.api.findfood.domain.repository.RestauranteRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+
+@Service
+<span class="fc" id="L16">@AllArgsConstructor</span>
+public class ReservaService {
+
+    private final ReservaRepository reservaRepository;
+
+    private final RestauranteRepository restauranteRepository;
+
+    private final ModelMapper modelMapper;
+
+    public ReservaDTO reservarMesa(Long restauranteId, ReservaDTO reservaDTO){
+<span class="fc" id="L26">        var optionalRestaurante = restauranteRepository.findById(restauranteId);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (optionalRestaurante.isEmpty()) {</span>
+<span class="fc" id="L28">            throw new EntityNotFoundException(&quot;Restaurante não existe&quot;);</span>
+        }
+
+<span class="fc" id="L31">        var reserva = modelMapper.map(reservaDTO, Reserva.class);</span>
+<span class="fc" id="L32">        reserva.setRestaurante(optionalRestaurante.get());</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if(haMesasDisponiveis(reserva)){</span>
+<span class="fc" id="L35">            return modelMapper.map(reservaRepository.save(reserva), ReservaDTO.class);</span>
+        } else {
+<span class="fc" id="L37">            throw new NaoHaMesasDisponiveisException(&quot;Não há lugares disponíveis nesse horário para o Restaurante: &quot; + optionalRestaurante.get().getNome());</span>
+        }
+    }
+
+    private boolean haMesasDisponiveis(Reserva reserva) {
+<span class="fc" id="L42">        final int qtdePessoasPorMesa = 4;</span>
+<span class="fc" id="L43">        int qtdeTotalDeMesas = reserva.getRestaurante().getQuantidadeTotalDeMesas();</span>
+
+<span class="fc" id="L45">        var listaDeReservas = reservaRepository.findReservasNoIntervaloDaNovaReservaSolicitada(reserva.getRestaurante(), reserva.getDataHoraInicio(), reserva.getDataHoraFim());</span>
+<span class="fc" id="L46">        int totalDeMesasReservadas = listaDeReservas.stream()</span>
+<span class="fc" id="L47">                .mapToInt(value -&gt; (int) Math.ceil((double)  value.getQtdPessoas() / qtdePessoasPorMesa))</span>
+<span class="fc" id="L48">                .sum();</span>
+
+<span class="fc" id="L50">        int qtdeTotalMesasLivres = qtdeTotalDeMesas - totalDeMesasReservadas;</span>
+<span class="fc" id="L51">        int mesasNecesariasParaReserva = (int) Math.ceil((double)  reserva.getQtdPessoas() / qtdePessoasPorMesa);</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        return qtdeTotalMesasLivres &gt;= mesasNecesariasParaReserva;</span>
+    }
+
+    public Collection&lt;ReservaDTO&gt; findAll(Long restauranteId) {
+<span class="fc" id="L57">        var optionalRestaurante = restauranteRepository.findById(restauranteId);</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (optionalRestaurante.isEmpty()) {</span>
+<span class="fc" id="L60">            throw new EntityNotFoundException(&quot;Restaurante não existe&quot;);</span>
+        }
+
+<span class="fc" id="L63">        var reservaList = reservaRepository.findAllByRestaurante(optionalRestaurante.get());</span>
+<span class="fc" id="L64">        return reservaList.stream()</span>
+<span class="fc" id="L65">                .map(reserva -&gt; modelMapper.map(reserva, ReservaDTO.class))</span>
+<span class="fc" id="L66">                .toList();</span>
+    }
+
+    public ReservaDTO findById(Long id) {
+<span class="fc" id="L70">        var reserva = reservaRepository.findById(id).orElseThrow(() -&gt; new EntityNotFoundException(&quot;Reserva não encontrada!&quot;));</span>
+<span class="fc" id="L71">        return modelMapper.map(reserva, ReservaDTO.class);</span>
+    }
+
+    public void delete(Long id) {
+<span class="fc" id="L75">        reservaRepository.deleteById(id);</span>
+<span class="fc" id="L76">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

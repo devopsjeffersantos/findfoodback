@@ -24,7 +24,7 @@ public class ReservaDados {
         return Restaurante.builder()
                 .id(1L)
                 .nome("Restaurante Teste")
-                .localizacao("São Paulo, SP")
+                .localizacao("São Paulo")
                 .horarioFuncionamento("10:00 às 22:00")
                 .tipoCozinha("Italiana")
                 .quantidadeTotalDeMesas(20)
