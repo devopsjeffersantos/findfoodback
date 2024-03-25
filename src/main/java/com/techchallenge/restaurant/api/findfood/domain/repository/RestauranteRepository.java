@@ -13,6 +13,6 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
             "WHERE LOWER(r.nome) LIKE LOWER(CONCAT('%', :nome, '%')) " +
             "AND LOWER(r.localizacao) LIKE LOWER(CONCAT('%', :localizacao, '%')) " +
             "AND LOWER(r.tipoCozinha) LIKE LOWER(CONCAT('%', :tipoCozinha, '%'))")
-    List<Restaurante> findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(String nome, String localizacao, String tipoCozinha);
+    List<Restaurante> findByNomeLocalizacaoTipoCozinha(String nome, String localizacao, String tipoCozinha);
 
 }

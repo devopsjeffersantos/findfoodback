@@ -9,8 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class RestauranteDTO {
 
-    private Long id;
-
     @NotEmpty(message = "O nome não foi preenchido")
     private String nome;
 

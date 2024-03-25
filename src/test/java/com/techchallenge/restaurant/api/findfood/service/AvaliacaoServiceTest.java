@@ -41,6 +41,7 @@ class AvaliacaoServiceTest extends AvaliacaoDados {
     }
 
     @Nested
+
     class registrarAvaliacao {
         @Test
         void deveRegistrarAvaliacaoComSucesso() {

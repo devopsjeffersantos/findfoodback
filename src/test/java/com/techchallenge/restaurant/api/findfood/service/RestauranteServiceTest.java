@@ -3,352 +3,329 @@ package com.techchallenge.restaurant.api.findfood.service;
 import com.techchallenge.restaurant.api.findfood.api.model.RestauranteDTO;
 import com.techchallenge.restaurant.api.findfood.domain.model.Restaurante;
 import com.techchallenge.restaurant.api.findfood.domain.repository.RestauranteRepository;
-import com.techchallenge.restaurant.api.findfood.domain.service.RestauranteServiceImpl;
+import com.techchallenge.restaurant.api.findfood.domain.service.RestauranteService;
 import com.techchallenge.restaurant.api.findfood.dados.RestauranteDados;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.jdbc.Sql;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-public class RestauranteServiceTest {
-    private final ModelMapper modelMapper = new ModelMapper();
+class RestauranteServiceTest extends RestauranteDados {
+
     @Mock
     private RestauranteRepository restauranteRepository;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
-    private RestauranteServiceImpl restauranteService;
+    private RestauranteService restauranteService;
 
     AutoCloseable mock;
     @BeforeEach
     void setup() {
         mock = MockitoAnnotations.openMocks(this);
-        restauranteService = new RestauranteServiceImpl(restauranteRepository);
     }
 
     @AfterEach
     void tearDown() throws Exception {
         mock.close();
     }
+    @Nested
+    @DisplayName("Testes de Registro de Restaurante")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class registrarRestaurante{
+        @Test
+        @Order(1)
+        void devePermitirRegistrarRestaurante(){
 
-    @Test
-    void devePermitirRegistrarRestaurante(){
+            // Arrange
+            var restauranteDto = criarRestauranteDtoValido();
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(criarRestauranteValido());
 
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restaurante = modelMapper.map(restauranteDto, Restaurante.class);  // Use the initialized modelMapper
-        when(restauranteRepository.save(restaurante)).thenReturn(restaurante);
+            //Act
+            restauranteService.registrarRestaurante(restauranteDto);
 
-        //Act
-        var restauranteRegistrado = restauranteService.save(restauranteDto);
-
-        // Assert
-        verify(restauranteRepository).save(eq(restaurante));
-        verify(restauranteRepository, times(1)).save(restaurante);
-        assertThat(restauranteRegistrado.getId()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getId());
-        assertThat(restauranteRegistrado.getNome()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getNome());
-        assertThat(restauranteRegistrado.getTipoCozinha()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getTipoCozinha());
-        assertThat(restauranteRegistrado.getHorarioFuncionamento()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getHorarioFuncionamento());
-        assertThat(restauranteRegistrado.getLocalizacao()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getLocalizacao());
-        assertThat(restauranteRegistrado.getQuantidadeTotalDeMesas()).isEqualTo(RestauranteDados.criarRestauranteDtoValido().getQuantidadeTotalDeMesas());
-
-    }
-    @Test
-    void devePermitirBuscarRestaurantePorNome() {
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restauranteSalvo);
-
-        // Simular a busca pelo nome do restaurante
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(eq(restauranteSalvo.getNome()), any(), any()))
-                .thenReturn(Collections.singletonList(restauranteSalvo));
-
-        // Act
-        List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(restauranteSalvo.getNome(), null, null);
-
-        // Assert
-        assertThat(actualRestaurants).isNotEmpty();
-        assertThat(actualRestaurants).hasSize(1);
-        assertThat(actualRestaurants.get(0).getNome()).isEqualTo(restauranteSalvo.getNome());
-    }
-
-    @Test
-    void devePermitirBuscarRestaurantePorLocalizacao(){
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restauranteSalvo);
-
-
-        // Simular a busca pelo nome do restaurante
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(any(), eq(restauranteSalvo.getLocalizacao()), any()))
-                .thenReturn(Collections.singletonList(restauranteSalvo));
-
-        // Act
-        List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(null, restauranteSalvo.getLocalizacao(), null);
-
-        // Assert
-        assertThat(actualRestaurants).isNotEmpty();
-        assertThat(actualRestaurants).hasSize(1);
-        assertThat(actualRestaurants.get(0).getLocalizacao()).isEqualTo(restauranteSalvo.getLocalizacao());
-    }
-
-    @Test
-    void devePermitirBuscarRestaurantePorTipoCozinha(){
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restauranteSalvo);
-
-        // Simular a busca pelo nome do restaurante
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(any(), any(), eq(restauranteSalvo.getTipoCozinha())))
-                .thenReturn(Collections.singletonList(restauranteSalvo));
-
-        // Act
-        List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(null, null, restauranteSalvo.getTipoCozinha());
-
-        // Assert
-        assertThat(actualRestaurants).isNotEmpty();
-        assertThat(actualRestaurants).hasSize(1);
-        assertThat(actualRestaurants.get(0).getTipoCozinha()).isEqualTo(restauranteSalvo.getTipoCozinha());
-
-    }
-
-    @Test
-    void devePermitirBuscarRestaurantesPorId(){
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restauranteSalvo);
-
-        // Simular a busca pelo nome do restaurante
-        when(restauranteRepository.findById(restauranteSalvo.getId())).thenReturn(Optional.of(restauranteSalvo));
-
-        // Act
-        Optional<RestauranteDTO> actualRestaurants = restauranteService.findById(restauranteSalvo.getId());
-
-        // Assert
-        assertThat(actualRestaurants).isNotEmpty();
-        assertThat(actualRestaurants).isNotNull();
-    }
-    @Test
-    void devePermitirBuscarTodosRestaurantes(){
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restauranteSalvo);
-
-        // Simular a busca pelo nome do restaurante
-        when(restauranteRepository.findAll()).thenReturn(Collections.singletonList(restauranteSalvo));
-
-        // Act
-        List<RestauranteDTO> actualRestaurants = (List<RestauranteDTO>) restauranteService.findAll();
-
-        // Assert
-        assertThat(actualRestaurants).isNotEmpty();
-        assertThat(actualRestaurants).hasSize(1);
-    }
-    @Test
-    void devePermitirAtualizarRestaurantes(){
-
-        // Arrange
-        Long restauranteId = 1L;
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(restauranteSalvo)).thenReturn(restauranteSalvo);
-
-        // Simular a alteração pelo nome do restaurante
-        when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restauranteSalvo));
-
-        // Act
-        RestauranteDTO restauranteAtualizado = restauranteService.update(restauranteId, restauranteDto);
-
-        // Assert
-        assertThat(restauranteAtualizado).isNotNull();
-        assertThat(restauranteAtualizado.getId()).isEqualTo(restauranteId);
-        assertThat(restauranteAtualizado.getNome()).isEqualTo(restauranteDto.getNome());
-    }
-    @Test
-    void devePermitirDeletarRestaurantes() {
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restauranteSalvo = modelMapper.map(restauranteDto, Restaurante.class);
-
-        // Simular a inserção do restaurante no banco de dados
-        when(restauranteRepository.save(restauranteSalvo)).thenReturn(restauranteSalvo);
-        when(restauranteRepository.findById(1L)).thenReturn(Optional.of(restauranteSalvo));
-
-        // Act
-        RestauranteDTO restauranteSalvoDTO = restauranteService.save(restauranteDto);
-        doNothing().when(restauranteRepository).deleteById(restauranteSalvo.getId());
-
-        restauranteService.delete(restauranteSalvoDTO.getId());
-
-        // Assert
-        verify(restauranteRepository, times(1)).deleteById(restauranteSalvo.getId());
-    }
-
-    @Test
-    void deveLancarExcecaoAoSalvarRestauranteComNomeVazio() {
-
-        // Arrange
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-        Restaurante restaurante = modelMapper.map(restauranteDto, Restaurante.class);
-        restaurante.setNome("");
-        when(restauranteRepository.save(restaurante)).thenThrow(DataIntegrityViolationException.class);
-
-        // Act
-        try {
-            restauranteService.save(restauranteDto);
-            fail("Deveria ter lançado uma exceção");
-        } catch (Exception e) {
             // Assert
-            assertThat(e).isInstanceOf(IllegalArgumentException.class);
-            assertThat(e.getMessage()).contains("source cannot be null");
+            verify(restauranteRepository, times(1)).save(any());
+            verifyNoMoreInteractions(restauranteRepository);
+        }
+        @Test
+        @Order(2)
+        void deveLancarExcecaoAoSalvarRestauranteComNomeVazio() {
+
+            // Arrange
+            var restauranteDto = criarRestauranteDtoValido();
+            restauranteDto.setNome("");
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(criarRestauranteValido());
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.registrarRestaurante(restauranteDto))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Inconsistencia nos campos informados.");
+
+        }
+    }
+    @Nested
+    @DisplayName("Testes de Atualização de Restaurante")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class atualizarRestaurante{
+        @Test
+        @Order(1)
+        void devePermitirAtualizarRestaurantes(){
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(criarRestauranteValido());
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            restauranteDto.setNome("Restaurante Teste 2");
+            restauranteService.atualizarRestaurante(restauranteId, restauranteDto);
+
+            // Assert
+            verify(restauranteRepository, times(2)).save(any());
+
+        }
+        @Test
+        @Order(2)
+        void deveLancarExcecaoAoAtualizarRestauranteInexistente() {
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.atualizarRestaurante(restauranteId, restauranteDto))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Restaurante não foi encontrado");
+
+        }
+    }
+    @Nested
+    @DisplayName("Testes de Exclusão de Restaurante")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class deletarRestaurante {
+        @Test
+        @Order(1)
+        void devePermitirDeletarRestaurantes() {
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            restauranteService.deletarRestaurante(restauranteId);
+
+            // Assert
+            verify(restauranteRepository, times(1)).deleteById(restauranteId);
+        }
+        @Test
+        @Order(2)
+        void deveLancarExcecaoAoDeletarRestauranteInexistente() {
+
+            // Arrange
+            Long restauranteId = 100L; // ID inexistente
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.deletarRestaurante(restauranteId))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Restaurante com ID '100' não foi encontrado para exclusão.");
+
+        }
+    }
+    @Nested
+    @DisplayName("Testes de Busca de Restaurante")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class buscarRestaurante{
+        @Test
+        @Order(1)
+        void devePermitirBuscarRestaurantePorNome() {
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(eq(restauranteDto.getNome()), any(), any())).thenReturn(Collections.singletonList(restaurante));
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            List<Restaurante> actualRestaurants = restauranteService.buscarRestaurantePor(restauranteDto.getNome(), null, null);
+
+            // Assert
+            verify(restauranteRepository, times(1)).save(any());
+            verify(restauranteRepository, times(1)).findByNomeLocalizacaoTipoCozinha(any(), any(), any());
+        }
+        @Test
+        @Order(2)
+        void devePermitirBuscarRestaurantePorLocalizacao(){
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(any(), eq(restauranteDto.getLocalizacao()), any())).thenReturn(Collections.singletonList(restaurante));
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            List<Restaurante> actualRestaurants = restauranteService.buscarRestaurantePor(null, restauranteDto.getLocalizacao(), null);
+
+            // Assert
+            verify(restauranteRepository, times(1)).save(any());
+            verify(restauranteRepository, times(1)).findByNomeLocalizacaoTipoCozinha(any(), any(), any());
+        }
+        @Test
+        @Order(3)
+        void devePermitirBuscarRestaurantePorTipoCozinha(){
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(any(), any(), eq(restauranteDto.getTipoCozinha()))).thenReturn(Collections.singletonList(restaurante));
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            List<Restaurante> actualRestaurants = restauranteService.buscarRestaurantePor(null, null , restauranteDto.getTipoCozinha());
+
+            // Assert
+            verify(restauranteRepository, times(1)).save(any());
+            verify(restauranteRepository, times(1)).findByNomeLocalizacaoTipoCozinha(any(), any(), any());
+        }
+        @Test
+        @Order(4)
+        void devePermitirBuscarRestaurantesPorId(){
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            Optional<Restaurante> actualRestaurants = restauranteService.buscarRestaurantePorID(restaurante.getId());
+
+            // Assert
+            verify(restauranteRepository, times(1)).save(any());
+            verify(restauranteRepository, times(2)).findById(any());
+
+        }
+        @Test
+        @Order(5)
+        void devePermitirBuscarTodosRestaurantes(){
+
+            // Arrange
+            var restauranteId = 1L;
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findAll()).thenReturn(Collections.singletonList(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+
+            // Act
+            restauranteService.registrarRestaurante(restauranteDto);
+            restauranteService.buscarTodosRestaurantes();
+
+            // Assert
+            verify(restauranteRepository, times(1)).findAll();
+        }
+        @Test
+        @Order(6)
+        void deveLancarExcecaoAoBuscarNomeRestauranteInexistente() {
+
+            // Arrange
+            var restauranteNome = "Ifood";
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(eq(restauranteDto.getNome()), any(), any())).thenReturn(Collections.singletonList(restaurante));
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.buscarRestaurantePor(restauranteNome, StringUtils.EMPTY, StringUtils.EMPTY))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Restaurante com nome '"+restauranteNome+"' não foi encontrado.");
+        }
+        @Test
+        @Order(7)
+        void deveLancarExcecaoAoBuscarLocalizacaoRestauranteInexistente() {
+
+            // Arrange
+            var restauranteLocalizacao = "Rio de Janeiro";
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(any(), eq(restauranteDto.getLocalizacao()), any())).thenReturn(Collections.singletonList(restaurante));
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.buscarRestaurantePor(StringUtils.EMPTY, restauranteLocalizacao, StringUtils.EMPTY))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Restaurante com localização '"+restauranteLocalizacao+"' não foi encontrado.");
+        }
+        @Test
+        @Order(8)
+        void deveLancarExcecaoAoBuscarTipoCozinhaRestauranteInexistente() {
+
+            // Arrange
+            var restauranteTipoCozinha = "Francesa";
+            var restauranteDto = criarRestauranteDtoValido();
+            var restaurante = criarRestauranteValido();
+
+            when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
+            when(modelMapper.map(restauranteDto, Restaurante.class)).thenReturn(restaurante);
+            when(restauranteRepository.findByNomeLocalizacaoTipoCozinha(any(), any(), eq(restauranteDto.getTipoCozinha()))).thenReturn(Collections.singletonList(restaurante));
+
+            //Act & Assert
+            assertThatThrownBy(() -> restauranteService.buscarRestaurantePor(StringUtils.EMPTY, StringUtils.EMPTY, restauranteTipoCozinha))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Restaurante com tipo de cozinha '"+restauranteTipoCozinha+"' não foi encontrado.");
+        }
+        @Test
+        @Order(9)
+        void deveLancarExcecaoAoBuscarTodosRestaurantes() {
+
+            assertThatThrownBy(() -> restauranteService.buscarTodosRestaurantes())
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Nenhum Restaurante Cadastrado");
+
         }
     }
 
-    @Test
-    void deveLancarExcecaoAoBuscarNomeRestauranteInexistente() {
-
-        // Arrange
-        RestauranteDTO restauranteSalvo = RestauranteDados.criarRestauranteDtoValido();
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(eq(restauranteSalvo.getNome()), any(), any())).thenReturn(Collections.emptyList());
-
-        // Act
-        try {
-            List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(restauranteSalvo.getNome(), null, null);
-            fail("Deveria ter lançado uma exceção");
-        } catch (EntityNotFoundException e) {
-            // Assert
-            assertThat(e.getMessage()).contains("Restaurante com nome 'Restaurante Teste' não foi encontrado.");
-        }
-    }
-    @Test
-    void deveLancarExcecaoAoBuscarLocalizacaoRestauranteInexistente() {
-
-        // Arrange
-        RestauranteDTO restauranteSalvo = RestauranteDados.criarRestauranteDtoValido();
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(any(), eq(restauranteSalvo.getLocalizacao()), any())).thenReturn(Collections.emptyList());
-
-        // Act
-        try {
-            List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(null, restauranteSalvo.getLocalizacao(), null);
-            fail("Deveria ter lançado uma exceção");
-        } catch (EntityNotFoundException e) {
-            // Assert
-            assertThat(e.getMessage()).contains("Restaurante com localização 'São Paulo, SP' não foi encontrado.");
-        }
-    }
-    @Test
-    void deveLancarExcecaoAoBuscarTipoCozinhaRestauranteInexistente() {
-
-        // Arrange
-        RestauranteDTO restauranteSalvo = RestauranteDados.criarRestauranteDtoValido();
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(any(), any(), eq(restauranteSalvo.getTipoCozinha()))).thenReturn(Collections.emptyList());
-
-        // Act
-        try {
-            List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(null, null, restauranteSalvo.getTipoCozinha());
-            fail("Deveria ter lançado uma exceção");
-        } catch (EntityNotFoundException e) {
-            // Assert
-            assertThat(e.getMessage()).contains("Restaurante com tipo de cozinha 'Italiana' não foi encontrado.");
-        }
-    }
-
-    @Test
-    void deveLancarExcecaoAoBuscarNenhumParametroRestauranteInexistente() {
-
-        // Arrange
-        RestauranteDTO restauranteSalvo = RestauranteDados.criarRestauranteDtoValido();
-        when(restauranteRepository.findByNomeIgnoreCaseLikeOrLocalizacaoIgnoreCaseLikeOrTipoCozinhaIgnoreCaseLike(any(), any(), any())).thenReturn(Collections.emptyList());
-
-        // Act
-        try {
-            List<Restaurante> actualRestaurants = restauranteService.findRestaurantePorNomeOuLocalizacaoOuTipoDeCozinha(null, null, null);
-            fail("Deveria ter lançado uma exceção");
-        } catch (IllegalArgumentException e) {
-            // Assert
-            assertThat(e.getMessage()).contains("Pelo menos um critério de busca (nome, localização ou tipo de cozinha) deve ser informado.");
-        }
-    }
-    @Test
-    void deveLancarExcecaoAoBuscarTodosRestaurantes() {
-
-        // Arrange
-        when(restauranteRepository.findAll()).thenThrow(DataIntegrityViolationException.class); // Simula um erro no repositório
-
-        // Act
-        try {
-            restauranteService.findAll();
-            fail("Deveria ter lançado uma exceção");
-        } catch (Exception e) {
-            // Assert
-            assertThat(e).isInstanceOf(DataIntegrityViolationException.class); // Ajuste a exceção esperada se necessário
-        }
-    }
-    @Test
-    void deveLancarExcecaoAoAtualizarRestauranteInexistente() {
-
-        // Arrange
-        Long restauranteId = 100L; // ID inexistente
-        RestauranteDTO restauranteDto = RestauranteDados.criarRestauranteDtoValido();
-
-        // Act
-        try {
-            restauranteService.update(restauranteId, restauranteDto);
-            fail("Deveria ter lançado uma exceção");
-        } catch (Exception e) {
-            // Assert
-            assertThat(e).isInstanceOf(EntityNotFoundException.class);
-            assertThat(e.getMessage()).contains("Restaurante não foi encontrado");
-        }
-    }
-
-    @Test
-    void deveLancarExcecaoAoDeletarRestauranteInexistente() {
-
-        // Arrange
-        Long restauranteId = 100L; // ID inexistente
-
-        // Act
-        try {
-            restauranteService.delete(restauranteId);
-            fail("Deveria ter lançado uma exceção"); // This will fail if no exception is thrown
-        } catch (RuntimeException e) { // Adjust the exception type if necessary
-            // Assert
-            assertThat(e).isInstanceOf(RuntimeException.class);
-        }
-    }
 }
