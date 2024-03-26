@@ -47,10 +47,14 @@ class AvaliacaoServiceTest extends AvaliacaoDados {
         void deveRegistrarAvaliacaoComSucesso() {
             var restauranteId = 1L;
             var avaliacaoDTO = criarAvaliacaoDto();
+            var avaliacao = criarAvaliacao();
+            avaliacao.getId();
+            avaliacao.getRestaurante();
+
             var restaurante = criarRestaurante();
 
             when(restauranteRepository.findById(restauranteId)).thenReturn(Optional.of(restaurante));
-            when(modelMapper.map(avaliacaoDTO, Avaliacao.class)).thenReturn(criarAvaliacao());
+            when(modelMapper.map(avaliacaoDTO, Avaliacao.class)).thenReturn(avaliacao);
 
             avaliacaoService.registrarAvaliacao(restauranteId, avaliacaoDTO);
 

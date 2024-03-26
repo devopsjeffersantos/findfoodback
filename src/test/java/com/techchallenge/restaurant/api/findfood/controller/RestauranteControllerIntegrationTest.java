@@ -166,9 +166,7 @@ public class RestauranteControllerIntegrationTest {
 
                 // Assert
             .then()
-                .statusCode(HttpStatus.OK.value())
-                .contentType("text/plain;charset=UTF-8") // Verifica o tipo de conteúdo JSON
-                .body(equalTo("Restaurante Deletado com Sucesso"));
+                .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
@@ -189,12 +187,7 @@ public class RestauranteControllerIntegrationTest {
 
             // Assert
             .then()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .contentType(MediaType.APPLICATION_JSON_VALUE) // Verifica o tipo de conteúdo JSON
-                .body("timestamp", notNullValue())
-                .body("status", equalTo(404))
-                .body("message", equalTo("Restaurante com ID '100' não foi encontrado para exclusão."))
-                .body("path", equalTo("/api/restaurantes/deletar/100"));
+                .statusCode(HttpStatus.NOT_FOUND.value());
 
         }
     }

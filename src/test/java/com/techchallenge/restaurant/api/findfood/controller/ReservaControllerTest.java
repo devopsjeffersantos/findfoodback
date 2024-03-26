@@ -85,8 +85,7 @@ class ReservaControllerTest extends ReservaDados {
         doNothing().when(reservaService).delete(anyLong());
 
         mockMvc.perform(delete("/api/restaurantes/reserva/{reservaId}", reservaDTO.getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Reserva excluída com sucesso"));
+                .andExpect(status().isNoContent());
 
         verify(reservaService, times(1)).delete(anyLong());
     }

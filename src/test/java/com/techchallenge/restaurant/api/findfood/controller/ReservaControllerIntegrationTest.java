@@ -151,7 +151,7 @@ class ReservaControllerIntegrationTest extends ReservaDados {
             .when()
                     .delete("/api/restaurantes/reserva/{reservaId}", reservaID)
             .then()
-                    .statusCode(HttpStatus.OK.value());
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

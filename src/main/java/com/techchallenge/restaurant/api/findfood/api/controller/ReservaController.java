@@ -63,6 +63,6 @@ public class ReservaController {
     })
     public ResponseEntity<String> excluirReserva(@Parameter(description = "ID da reserva") @PathVariable Long reservaId) {
         service.delete(reservaId);
-        return ResponseEntity.ok().body("Reserva excluída com sucesso");
+        return ResponseEntity.noContent().build();
     }
 }
