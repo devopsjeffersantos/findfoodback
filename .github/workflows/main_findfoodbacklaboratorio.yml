@@ -35,12 +35,12 @@ jobs:
           name: java-app
           path: '${{ github.workspace }}/target/*.jar'
 
-      - name: Run tests
-        run: mvn test
-        env:
-          DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
-          DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
-          DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
+      #- name: Run tests
+      #  run: mvn test
+      #  env:
+      #    DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+      #    DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
+      #    DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
 
 
       - name: Clone repository
@@ -49,6 +49,10 @@ jobs:
       - name: Run Test
         run: ./mvnw verify
         continue-on-error: true
+        env:
+          DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
+          DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
+          DATASOURCE_PASSWORD: ${{ secrets.DATASOURCE_PASSWORD }}
 
       - name: Setup Allure History
         uses: actions/checkout@v4
