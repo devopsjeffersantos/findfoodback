@@ -6,7 +6,4 @@ src/main/java/com/.DS_Store
 .ideia/misc.xml
 .ideia/compiler.xml
 findfood.iml
-.idea
-.vscode
-.mvn
-target/
+target

@@ -84,7 +84,7 @@ public class RestauranteService {
         }
     }
 
-    private boolean isRestauranteDTOValid(RestauranteDTO dto) {
+    public boolean isRestauranteDTOValid(RestauranteDTO dto) {
         return dto.getNome() != null && !dto.getNome().isEmpty() &&
                 dto.getLocalizacao() != null && !dto.getLocalizacao().isEmpty() &&
                 dto.getTipoCozinha() != null && !dto.getTipoCozinha().isEmpty() &&

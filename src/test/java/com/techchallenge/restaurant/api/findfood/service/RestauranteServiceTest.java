@@ -63,8 +63,14 @@ class RestauranteServiceTest extends RestauranteDados {
             verify(restauranteRepository, times(1)).save(any());
             verifyNoMoreInteractions(restauranteRepository);
         }
+
         @Test
         @Order(2)
+        void deveValidarDTORestaurante(){
+            restauranteService.isRestauranteDTOValid(criarRestauranteDtoValido());
+        }
+        @Test
+        @Order(3)
         void deveLancarExcecaoAoSalvarRestauranteComNomeVazio() {
 
             // Arrange
@@ -317,8 +323,18 @@ class RestauranteServiceTest extends RestauranteDados {
                     .isInstanceOf(EntityNotFoundException.class)
                     .hasMessage("Restaurante com tipo de cozinha '"+restauranteTipoCozinha+"' não foi encontrado.");
         }
+
         @Test
         @Order(9)
+        void deveLancarExcecaoAoBuscarRestaurantesPorId() {
+            var restauranteID = 100L;
+            assertThatThrownBy(() -> restauranteService.buscarRestaurantePorID(restauranteID))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage("Nenhum Restaurante Encontrado");
+
+        }
+        @Test
+        @Order(10)
         void deveLancarExcecaoAoBuscarTodosRestaurantes() {
 
             assertThatThrownBy(() -> restauranteService.buscarTodosRestaurantes())
