@@ -17,10 +17,10 @@ start-api:
 	@./mvnw $(MVN_ARGS) clean spring-boot:run
 
 start-jar: package
-	@java -jar ./target/findfood-*.jar
+	@java -jar ./target/findfoodback-*.jar
 
 start-docker:
-	@docker run --rm --name findfoodback -p 80:80 -it -e DATASOURCE_URL=${DATASOURCE_URL} -e DATASOURCE_USERNAME=${DATASOURCE_USERNAME} -e DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD} findfoodback:latest
+	@docker run --rm --name findfoodback -p 80:80 -it findfoodback:latest
 
 debug-api:
 	@./mvnw $(MVN_ARGS) clean spring-boot:run -Dspring-boot.run.profiles=dev -Dspring.jmx.enabled=true
@@ -28,9 +28,11 @@ debug-api:
 ## Test
 
 unit-test:
+	@./mvnw $(MVN_ARGS) wrapper:wrapper
 	@./mvnw $(MVN_ARGS) test
 
 integration-test:
+# @./mvnw $(MVN_ARGS) failsafe:integration-test
 	@./mvnw $(MVN_ARGS) test -P integration-test
 	@./mvnw jacoco:report
 
@@ -50,8 +52,7 @@ report-maven: # Gerar relatorio HTML utilizando maven
 	@echo $(TIMESTAMP) [INFO] maven report generate in: $(MVN_REPORT)
 
 report-allure:
-	@./mvnw clean verify
-	allure serve ./target/allure-results 
+	allure serve target
 
 ## Docker
 
